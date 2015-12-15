@@ -2,10 +2,13 @@
 using System.Web.Http;
 
 using EOls.EPiContentApi.Extensions;
+using EOls.EPiContentApi.Interfaces;
+using EOls.EPiContentApi.Util;
 
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.Globalization;
+using EPiServer.Security;
 using EPiServer.ServiceLocation;
 
 namespace EOls.EPiContentApi
@@ -18,7 +21,7 @@ namespace EOls.EPiContentApi
         {
             var rootRef = new ContentReference(id);
 
-            // Return 
+            // Page does not exist
             if (!rootRef.Exist()) return BadRequest();
 
             // Set locale by query or by EPiServer
@@ -29,7 +32,13 @@ namespace EOls.EPiContentApi
             
             var page = Repo.Get<PageData>(new ContentReference(id));
 
-            return Ok(ContentSerializer.Serialize(page));
+            // Page is not published and user is not a authorized admin
+            if (page.Status != VersionStatus.Published && !PrincipalInfo.HasAdminAccess)
+            {
+                return Unauthorized(null);
+            }
+
+            return Ok(ContentSerializer.Instance.Serialize(page));
         }
     }
 }
