@@ -26,5 +26,15 @@ namespace EOls.EPiContentApi.Extensions
             var urlResolver = ServiceLocator.Current.GetInstance<UrlResolver>();
             return urlResolver.GetVirtualPath(contentRef).GetUrl(abolute);
         }
+
+        public static string GetContentApiUrl(this ContentReference contentRef)
+        {
+            return $"/api/content/get/{contentRef.ID}";
+        }
+
+        public static string GetContentApiUrl(this PageReference pageRef)
+        {
+            return $"/api/content/get/{pageRef.ID}";
+        }
     }
 }

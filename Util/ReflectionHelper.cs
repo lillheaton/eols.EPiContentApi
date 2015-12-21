@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace EOls.EPiContentApi.Util
 {
@@ -17,14 +18,13 @@ namespace EOls.EPiContentApi.Util
 
             var propertyConvertClasses =
                 AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(s => !IsProxy(s))
                     .SelectMany(s => s.GetTypes())
                     .Where(
                         s =>
                         s.IsClass
                         && s.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == itype))
                     .ToArray();
-
-//            var asfn = propertyConvertClasses.ToArray()[0].GetInterfaces()[0].GetGenericArguments()[0].IsPrimitive;
 
             foreach (var c in propertyConvertClasses)
             {
@@ -33,6 +33,19 @@ namespace EOls.EPiContentApi.Util
             }
 
             return list;
+        }
+
+        private static bool IsProxy(Assembly assembly)
+        {
+            try
+            {
+                var loc = assembly.Location;
+                return false;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
         }
     }
 }

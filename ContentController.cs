@@ -11,6 +11,8 @@ using EPiServer.Globalization;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
 
+using Newtonsoft.Json;
+
 namespace EOls.EPiContentApi
 {
     public class ContentController : ApiController
@@ -38,7 +40,7 @@ namespace EOls.EPiContentApi
                 return Unauthorized(null);
             }
 
-            return Ok(ContentSerializer.Instance.Serialize(page));
+            return Json(ContentSerializer.Instance.Serialize(page), new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         }
     }
 }

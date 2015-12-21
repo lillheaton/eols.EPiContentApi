@@ -38,60 +38,60 @@
       <HintPath>..\packages\Castle.Windsor.3.2.0\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.dll</HintPath>
+    <Reference Include="EPiServer, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.ApplicationModules, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
+    <Reference Include="EPiServer.ApplicationModules, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Configuration, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.Configuration.dll</HintPath>
+    <Reference Include="EPiServer.Configuration, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Data, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.Data.dll</HintPath>
+    <Reference Include="EPiServer.Data, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Data.Cache, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.Data.Cache.dll</HintPath>
+    <Reference Include="EPiServer.Data.Cache, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.Data.Cache.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Enterprise, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.Enterprise.dll</HintPath>
+    <Reference Include="EPiServer.Enterprise, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.Enterprise.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Events, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.Events.dll</HintPath>
+    <Reference Include="EPiServer.Events, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.Events.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Framework, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.Framework.dll</HintPath>
+    <Reference Include="EPiServer.Framework, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.ImageLibrary, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
+    <Reference Include="EPiServer.ImageLibrary, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Licensing, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.Licensing.dll</HintPath>
+    <Reference Include="EPiServer.Licensing, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.Licensing.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.LinkAnalyzer, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
+    <Reference Include="EPiServer.LinkAnalyzer, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Shell, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.9.4.0\lib\net45\EPiServer.Shell.dll</HintPath>
+    <Reference Include="EPiServer.Shell, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.9.5.0\lib\net45\EPiServer.Shell.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Web.WebControls, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
+    <Reference Include="EPiServer.Web.WebControls, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.XForms, Version=9.4.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.9.4.0\lib\net45\EPiServer.XForms.dll</HintPath>
+    <Reference Include="EPiServer.XForms, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.9.5.0\lib\net45\EPiServer.XForms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -166,6 +166,12 @@
     <Compile Include="ContentApiCacheManager.cs" />
     <Compile Include="ContentController.cs" />
     <Compile Include="ContentSerializer.cs" />
+    <Compile Include="Converters\BlockDataPropertyConverter.cs" />
+    <Compile Include="Converters\ContentAreaPropertyConverter.cs" />
+    <Compile Include="Converters\ContentReferencePropertyConverter.cs" />
+    <Compile Include="Converters\LinkItemCollectionPropertyConverter.cs" />
+    <Compile Include="Converters\PageReferencePropertyConverter.cs" />
+    <Compile Include="Converters\UrlConverter.cs" />
     <Compile Include="Extensions\EPiServerExtensions.cs" />
     <Compile Include="Interfaces\IApiPropertyConverter.cs" />
     <Compile Include="Models\ContentModel.cs" />
@@ -176,9 +182,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
