@@ -111,6 +111,7 @@ namespace EOls.EPiContentApi
                 Name = page.Name,
                 ContentTypeId = page.ContentTypeID,
                 PageTypeName = page.PageTypeName,
+                LanguageBranch = page.LanguageBranch,
                 Content = ConvertToKeyValue(page, page.LanguageBranch)
             };
         }

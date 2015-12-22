@@ -11,9 +11,15 @@ namespace EOls.EPiContentApi
         public void RegisterRoutes(RouteCollection routes)
         {
             routes.MapHttpRoute(
+                name: "Content Locale Api",
+                routeTemplate: "api/{locale}/content/{id}",
+                defaults: new { controller = "Content", id = RouteParameter.Optional }
+            );
+
+            routes.MapHttpRoute(
                 name: "Content Api",
-                routeTemplate: "api/content/{action}/{id}",
-                defaults: new { controller = "Content", action = RouteParameter.Optional, id = RouteParameter.Optional }
+                routeTemplate: "api/content/{id}",
+                defaults: new { controller = "Content", id = RouteParameter.Optional }
             );
         }
 

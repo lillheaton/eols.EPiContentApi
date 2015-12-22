@@ -21,7 +21,7 @@ namespace EOls.EPiContentApi.Converters
                 return new { media.Name, media.Thumbnail, media.MimeType, Url = UrlResolver.Current.GetUrl(media) };
             }
 
-            return obj.GetContentApiUrl();
+            return obj.GetContentApiUrl(locale);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace EOls.EPiContentApi.Converters
     {
         public object Convert(PageReference obj, string locale)
         {
-            return obj?.GetContentApiUrl();
+            return obj?.GetContentApiUrl(locale);
         }
     }
 }

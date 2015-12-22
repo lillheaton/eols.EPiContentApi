@@ -21,18 +21,16 @@ namespace EOls.EPiContentApi
 
         public IHttpActionResult Get(int id, string locale = null)
         {
-            var rootRef = new ContentReference(id);
-
-            // Page does not exist
-            if (!rootRef.Exist()) return BadRequest();
-
             // Set locale by query or by EPiServer
             locale = locale ?? ContentLanguage.PreferredCulture.Name;
-
+            
             // Set preferredCulture so blocks can user ContentLanguage.PreferredCulture.Name to get current locale
             ContentLanguage.PreferredCulture = CultureInfo.CreateSpecificCulture(locale);
             
-            var page = Repo.Get<PageData>(new ContentReference(id));
+            var page = Repo.Get<PageData>(new ContentReference(id), new LanguageSelector(locale));
+
+            // If page does note exist return bad request
+            if(page == null) return BadRequest();
 
             // Page is not published and user is not a authorized admin
             if (page.Status != VersionStatus.Published && !PrincipalInfo.HasAdminAccess)
