@@ -171,6 +171,7 @@
     <Compile Include="Converters\ContentReferencePropertyConverter.cs" />
     <Compile Include="Converters\LinkItemCollectionPropertyConverter.cs" />
     <Compile Include="Converters\PageReferencePropertyConverter.cs" />
+    <Compile Include="Converters\PageTypePropertyConverter.cs" />
     <Compile Include="Converters\UrlConverter.cs" />
     <Compile Include="Extensions\EPiServerExtensions.cs" />
     <Compile Include="Interfaces\IApiPropertyConverter.cs" />
