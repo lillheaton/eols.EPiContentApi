@@ -176,6 +176,7 @@
     <Compile Include="Extensions\EPiServerExtensions.cs" />
     <Compile Include="Interfaces\IApiPropertyConverter.cs" />
     <Compile Include="Models\ContentModel.cs" />
+    <Compile Include="Models\PropertyInfoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoutesInitializationModule.cs" />
     <Compile Include="Util\ReflectionHelper.cs" />

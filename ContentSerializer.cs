@@ -118,13 +118,53 @@ namespace EOls.EPiContentApi
         
         public Dictionary<string, object> ConvertToKeyValue<T>(T obj, string locale) where T : class
         {
-            var dict = new Dictionary<string, object>();
-            foreach (var prop in GetProperties(obj))
+            Dictionary<string, object> dict;
+
+            if (IsCachedContent(obj, locale, out dict))
             {
-                dict.Add(prop.Name, ConvertProperty(prop, obj, locale));
+                return dict;
+            }
+            
+            dict = GetProperties(obj).ToDictionary(prop => prop.PropertyInfo.Name, prop => ConvertProperty(prop.PropertyInfo, obj, locale));
+
+            if (obj is IContent)
+            {
+                ContentApiCacheManager.CacheObject(dict, (obj as IContent).ContentLink, locale);
             }
 
             return dict;
+        }
+
+        public bool IsCachedContent<T>(T obj, string locale, out Dictionary<string, object> cachedDict) where T : class
+        {
+            cachedDict = null;
+
+            if (obj is IContent)
+            {
+                var content = obj as IContent;
+                cachedDict = ContentApiCacheManager.GetObject<Dictionary<string, object>>(content.ContentLink, locale);
+                if (cachedDict != null)
+                {
+                    if (!cachedDict.ContainsKey("IsCachedContent"))
+                    {
+                        cachedDict.Add("IsCachedContent", true);
+                    };
+
+                    // Loop throug all properties and check if some properties don't want to cache their content
+                    foreach (var prop in GetProperties(obj).Where(s => s.Attribute is ApiPropertyAttribute))
+                    {
+                        var attr = prop.Attribute as ApiPropertyAttribute;
+                        if (!attr.Cache && cachedDict.ContainsKey(prop.PropertyInfo.Name))
+                        {
+                            cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, obj, locale);
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
@@ -144,7 +184,7 @@ namespace EOls.EPiContentApi
             return propType.GetValue(owner);
         }
 
-        private IEnumerable<PropertyInfo> GetProperties<T>(T obj) where T : class
+        private IEnumerable<PropertyInfoModel> GetProperties<T>(T obj) where T : class
         {
             PropertyInfo[] properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -167,10 +207,10 @@ namespace EOls.EPiContentApi
                     }
                 }
                 
-                return properties.Where(s => dynamicProperties.Any(p => p.Name == s.Name));
+                return properties.Where(s => dynamicProperties.Any(p => p.Name == s.Name)).Select(s => new PropertyInfoModel { PropertyInfo = s, Attribute = s.GetCustomAttributes().OfType<ApiPropertyAttribute>().FirstOrDefault()} );
             }
             
-            return properties.Where(s => s.GetCustomAttributes().Any(a => propertyAttributes.Contains(a.GetType()))).ToArray();
+            return properties.Where(s => s.GetCustomAttributes().Any(a => propertyAttributes.Contains(a.GetType()))).Select(s => new PropertyInfoModel { PropertyInfo = s, Attribute = s.GetCustomAttributes().OfType<ApiPropertyAttribute>().FirstOrDefault() });
         }
 
         /// <summary>

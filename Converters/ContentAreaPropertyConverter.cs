@@ -38,17 +38,6 @@ namespace EOls.EPiContentApi.Converters
                                 : ContentSerializer.Instance.ConvertToKeyValue(s, locale))
                         .ToArray();
             }
-//            return
-//                (obj.Items == null
-//                     ? obj.ContentFragments.Select(
-//                         s => repo.Get<ContentData>(s.ContentLink, new LanguageSelector(locale)))
-//                     : obj.Items.Select(s => repo.Get<ContentData>(s.ContentLink, new LanguageSelector(locale)))).Select
-//                    (
-//                        s =>
-//                        s is PageData
-//                            ? ContentSerializer.Instance.ConvertPage(s as PageData) as object
-//                            : ContentSerializer.Instance.ConvertToKeyValue(s, locale)
-//                                  .ToDictionary(d => d.Key, d => d.Value));
         }
     }
 }

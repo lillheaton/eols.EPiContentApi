@@ -1,7 +1,9 @@
 ﻿using EOls.EPiContentApi.Extensions;
 using EOls.EPiContentApi.Interfaces;
 
+using EPiServer;
 using EPiServer.Core;
+using EPiServer.ServiceLocation;
 
 namespace EOls.EPiContentApi.Converters
 {
@@ -9,7 +11,11 @@ namespace EOls.EPiContentApi.Converters
     {
         public object Convert(PageReference obj, string locale)
         {
-            return obj?.GetContentApiUrl(locale);
+            if (obj == null) return null;
+
+            var repo = ServiceLocator.Current.GetInstance<IContentRepository>();
+            var page = repo.Get<PageData>(obj, new LanguageSelector(locale));
+            return ContentSerializer.Instance.ConvertPage(page);
         }
     }
 }

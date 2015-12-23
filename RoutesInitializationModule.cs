@@ -1,7 +1,10 @@
 ﻿using System.Web.Http;
 using System.Web.Routing;
+
+using EPiServer;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
+using EPiServer.Globalization;
 
 namespace EOls.EPiContentApi
 {
@@ -26,11 +29,19 @@ namespace EOls.EPiContentApi
         public void Initialize(InitializationEngine context)
         {
             RegisterRoutes(RouteTable.Routes);
+            DataFactory.Instance.PublishedContent += Instance_PublishedContent;
         }
-
+        
         public void Uninitialize(InitializationEngine context)
         {
+            DataFactory.Instance.PublishedContent -= Instance_PublishedContent;
+        }
 
+
+        private void Instance_PublishedContent(object sender, ContentEventArgs e)
+        {
+            // Try to remove cached content for contentReference
+            ContentApiCacheManager.RemoveCache(e.ContentLink, ContentLanguage.PreferredCulture.Name);
         }
     }
 }
