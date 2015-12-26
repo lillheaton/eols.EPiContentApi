@@ -6,13 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("EOls.EPiContentApi")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A Generic EPiServer Content Api")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("LBi Sverige AB")]
 [assembly: AssemblyProduct("EOls.EPiContentApi")]
-[assembly: AssemblyCopyright("Copyright © LBi Sverige AB 2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © Emil Olsson 2015")]
 [assembly: AssemblyCulture("")]
+[assembly: AssemblyCompany("Emil Olsson")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -32,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.1")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

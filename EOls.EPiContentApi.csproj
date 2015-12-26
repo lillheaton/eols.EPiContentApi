@@ -182,6 +182,9 @@
     <Compile Include="Util\ReflectionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="EOls.EPiContentApi.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
