@@ -3,9 +3,9 @@ using EPiServer;
 
 namespace EOls.EPiContentApi.Converters
 {
-    public class UrlConverter : IApiPropertyConverter<Url>
+    public class UrlPropertyConverter : IApiPropertyConverter<Url>
     {
-        public object Convert(Url obj, string locale)
+        public object Convert(Url obj, object owner, string locale)
         {
             return obj?.ToString();
         }

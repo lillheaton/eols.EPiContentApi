@@ -6,8 +6,8 @@ A generic content api for the EPiServer platform. The nuget comes with a standar
 
 ###Usage
 
-    /api/{market}/content/{id}
-    /api/content/{id}?locale={market}
+    [GET] /api/{market}/content/{id}
+    [GET] /api/content/{id}?locale={market}
     
     Example: /api/en/content/5
 
@@ -57,8 +57,11 @@ public class UrlConverter : IApiPropertyConverter<Url>
 }
 ```
 
-What's Next!
+###Cacheing
+Due to heavy reflection operations, the content gets cached to imporve performance. Pages and blocks gets cached individually and when you republish a page or a block that cached gets cleared.
 
-   * Attribute for hiding a whole class
-   * Property converter method will be able to get its parent as a parameter
+###What's Next!
+
+   * Unit test, better late then never!
+   * Attribute for hiding a whole class   
    * More documentation! 

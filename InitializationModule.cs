@@ -9,7 +9,7 @@ using EPiServer.Globalization;
 namespace EOls.EPiContentApi
 {
     [InitializableModule]
-    public class RoutesInitializationModule : IInitializableModule
+    public class InitializationModule : IInitializableModule
     {
         public void RegisterRoutes(RouteCollection routes)
         {

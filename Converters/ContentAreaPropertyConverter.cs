@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using EOls.EPiContentApi.Interfaces;
+using EOls.EPiContentApi.Models;
 
 using EPiServer;
 using EPiServer.Core;
@@ -12,32 +13,53 @@ namespace EOls.EPiContentApi.Converters
 {
     public class ContentAreaPropertyConverter : IApiPropertyConverter<ContentArea>
     {
-        public object Convert(ContentArea obj, string locale)
+        public object Convert(ContentArea obj, object owner, string locale)
         {
             if (obj == null) return null;
-            var repo = ServiceLocator.Current.GetInstance<IContentRepository>();
+
             try
             {
-                return
-                    obj.Items.Select(s => repo.Get<ContentData>(s.ContentLink, new LanguageSelector(locale)))
-                        .Select(
-                            s =>
-                            s is PageData
-                                ? ContentSerializer.Instance.ConvertPage(s as PageData) as object
-                                : ContentSerializer.Instance.ConvertToKeyValue(s, locale))
-                        .ToArray();
+                return GetContent(obj.Items.Select(s => s.ContentLink), locale).ToArray();
             }
             catch (Exception e)
             {
-                return
-                    obj.ContentFragments.Select(s => repo.Get<ContentData>(s.ContentLink, new LanguageSelector(locale)))
-                        .Select(
-                            s =>
-                            s is PageData
-                                ? ContentSerializer.Instance.ConvertPage(s as PageData) as object
-                                : ContentSerializer.Instance.ConvertToKeyValue(s, locale))
-                        .ToArray();
+                return GetContent(obj.ContentFragments.Select(s => s.ContentLink), locale);
             }
         }
+
+        private IEnumerable<object> GetContent(IEnumerable<ContentReference> references, string locale)
+        {
+            var repo = ServiceLocator.Current.GetInstance<IContentRepository>();
+
+            foreach (var contentRef in references)
+            {
+                if (contentRef is PageReference)
+                {
+                    var pageData = ContentApiCacheManager.GetObject<ContentModel>(contentRef, locale);
+                    if (pageData != null)
+                    {
+                        yield return pageData;
+                        continue;
+                    }
+
+                    pageData = ContentSerializer.Instance.Serialize(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
+                    ContentApiCacheManager.CacheObject(pageData, contentRef, locale);
+                    yield return pageData;
+                }
+                else
+                {
+                    var contentDict = ContentApiCacheManager.GetObject<Dictionary<string, object>>(contentRef, locale);
+                    if (contentDict != null)
+                    {
+                        yield return contentDict;
+                        continue;
+                    }
+
+                    contentDict = ContentSerializer.Instance.ConvertToKeyValue(repo.Get<ContentData>(contentRef, new LanguageSelector(locale)), locale);
+                    ContentApiCacheManager.CacheObject(contentDict, contentRef, locale);
+                    yield return contentDict;
+                }
+            }
+        } 
     }
 }

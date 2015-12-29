@@ -9,13 +9,13 @@ namespace EOls.EPiContentApi.Converters
 {
     public class PageReferencePropertyConverter : IApiPropertyConverter<PageReference>
     {
-        public object Convert(PageReference obj, string locale)
+        public object Convert(PageReference obj, object owner, string locale)
         {
             if (obj == null) return null;
 
             var repo = ServiceLocator.Current.GetInstance<IContentRepository>();
             var page = repo.Get<PageData>(obj, new LanguageSelector(locale));
-            return ContentSerializer.Instance.ConvertPage(page);
+            return ContentSerializer.Instance.Serialize(page);
         }
     }
 }

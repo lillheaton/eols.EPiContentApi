@@ -5,7 +5,7 @@ namespace EOls.EPiContentApi.Converters
 {
     public class PageTypePropertyConverter : IApiPropertyConverter<PageType>
     {
-        public object Convert(PageType obj, string locale)
+        public object Convert(PageType obj, object owner, string locale)
         {
             if (obj == null) return null;
             return
