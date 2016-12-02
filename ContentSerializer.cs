@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using EOls.EPiContentApi.Attributes;
 using EOls.EPiContentApi.Converters;
@@ -13,18 +11,15 @@ using EOls.EPiContentApi.Interfaces;
 using EOls.EPiContentApi.Models;
 using EOls.EPiContentApi.Util;
 
-using EPiServer;
 using EPiServer.Core;
-using EPiServer.Logging;
 using EPiServer.ServiceLocation;
-using EPiServer.SpecializedProperties;
 
 namespace EOls.EPiContentApi
 {
-    // http://jondjones.com/dependency-injection-in-episerver-servicelocator-and-injected-explained/ maybe allow users to inject service
-
     public sealed class ContentSerializer
     {
+        private ICacheManager CacheManager { get; }
+
         private static object _lock = new object();
         private static ContentSerializer _instance;
         public static ContentSerializer Instance
@@ -70,6 +65,7 @@ namespace EOls.EPiContentApi
         
         private ContentSerializer()
         {
+            this.CacheManager = ServiceLocator.Current.GetInstance<ICacheManager>();
             this.Setup();
         }
         
@@ -94,7 +90,7 @@ namespace EOls.EPiContentApi
                         propertyConverters.Remove(eolsConverter);
                     }
                 }
-            }   
+            }
         }
 
         /// <summary>
@@ -141,7 +137,7 @@ namespace EOls.EPiContentApi
             // If obj is IContent, cache the object
             if (obj is IContent)
             {
-                ContentApiCacheManager.CacheObject(dict, (obj as IContent).ContentLink, locale);
+                this.CacheManager.CacheObject(dict, (obj as IContent).ContentLink, locale);
             }
 
             return dict;
@@ -163,7 +159,7 @@ namespace EOls.EPiContentApi
             if (obj is IContent)
             {
                 var content = obj as IContent;
-                cachedDict = ContentApiCacheManager.GetObject<Dictionary<string, object>>(content.ContentLink, locale);
+                cachedDict = this.CacheManager.GetObject<Dictionary<string, object>>(content.ContentLink, locale);
                 if (cachedDict != null)
                 {
                     // Add a key to dictionary so you can more easily see what's being cached
@@ -218,7 +214,7 @@ namespace EOls.EPiContentApi
                     if (pageRef == null)
                         continue;
 
-                    var contentRefDict = ContentApiCacheManager.GetObject<Dictionary<string, object>>(pageRef, locale);
+                    var contentRefDict = this.CacheManager.GetObject<Dictionary<string, object>>(pageRef, locale);
                     if (contentRefDict == null)
                     {
                         cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, owner, locale);
@@ -230,7 +226,7 @@ namespace EOls.EPiContentApi
                     if (contentobj == null)
                         continue;
 
-                    var contentDict = ContentApiCacheManager.GetObject<Dictionary<string, object>>(contentobj.ContentLink, locale);
+                    var contentDict = this.CacheManager.GetObject<Dictionary<string, object>>(contentobj.ContentLink, locale);
                     if (contentDict == null)
                     {
                         cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, owner, locale);

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq;
 using System.Web.Http;
 
 using EOls.EPiContentApi.Extensions;
@@ -18,7 +19,7 @@ namespace EOls.EPiContentApi
     public class ContentController : ApiController
     {
         private IContentRepository Repo { get; } = ServiceLocator.Current.GetInstance<IContentRepository>();
-
+        
         public IHttpActionResult Get(int id, string locale = null)
         {
             // Set locale by query or by EPiServer
@@ -33,7 +34,7 @@ namespace EOls.EPiContentApi
             if(page == null) return BadRequest();
 
             // Page is not published and user is not a authorized admin
-            if (page.Status != VersionStatus.Published && !PrincipalInfo.HasAdminAccess)
+            if (page.Status != VersionStatus.Published && !(new[] { "WebEditors", "WebAdmins", "Administrators" }).Any(s => PrincipalInfo.CurrentPrincipal.IsInRole(s)))
             {
                 return Unauthorized(null);
             }

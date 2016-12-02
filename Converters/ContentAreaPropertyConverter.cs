@@ -13,6 +13,8 @@ namespace EOls.EPiContentApi.Converters
 {
     public class ContentAreaPropertyConverter : IApiPropertyConverter<ContentArea>
     {
+        public ICacheManager CacheManager { get; } = ServiceLocator.Current.GetInstance<ICacheManager>();
+
         public object Convert(ContentArea obj, object owner, string locale)
         {
             if (obj == null) return null;
@@ -35,7 +37,7 @@ namespace EOls.EPiContentApi.Converters
             {
                 if (contentRef is PageReference)
                 {
-                    var pageData = ContentApiCacheManager.GetObject<ContentModel>(contentRef, locale);
+                    var pageData = this.CacheManager.GetObject<ContentModel>(contentRef, locale);
                     if (pageData != null)
                     {
                         yield return pageData;
@@ -43,12 +45,12 @@ namespace EOls.EPiContentApi.Converters
                     }
 
                     pageData = ContentSerializer.Instance.Serialize(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
-                    ContentApiCacheManager.CacheObject(pageData, contentRef, locale);
+                    this.CacheManager.CacheObject(pageData, contentRef, locale);
                     yield return pageData;
                 }
                 else
                 {
-                    var contentDict = ContentApiCacheManager.GetObject<Dictionary<string, object>>(contentRef, locale);
+                    var contentDict = this.CacheManager.GetObject<Dictionary<string, object>>(contentRef, locale);
                     if (contentDict != null)
                     {
                         yield return contentDict;
@@ -56,7 +58,7 @@ namespace EOls.EPiContentApi.Converters
                     }
 
                     contentDict = ContentSerializer.Instance.ConvertToKeyValue(repo.Get<ContentData>(contentRef, new LanguageSelector(locale)), locale);
-                    ContentApiCacheManager.CacheObject(contentDict, contentRef, locale);
+                    this.CacheManager.CacheObject(contentDict, contentRef, locale);
                     yield return contentDict;
                 }
             }

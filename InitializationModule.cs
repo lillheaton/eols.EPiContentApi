@@ -1,10 +1,13 @@
 ﻿using System.Web.Http;
 using System.Web.Routing;
 
+using EOls.EPiContentApi.Interfaces;
+
 using EPiServer;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
+using EPiServer.ServiceLocation;
 
 namespace EOls.EPiContentApi
 {
@@ -41,7 +44,7 @@ namespace EOls.EPiContentApi
         private void Instance_PublishedContent(object sender, ContentEventArgs e)
         {
             // Try to remove cached content for contentReference
-            ContentApiCacheManager.RemoveCache(e.ContentLink, ContentLanguage.PreferredCulture.Name);
+            ServiceLocator.Current.GetInstance<ICacheManager>().RemoveCache(e.ContentLink, ContentLanguage.PreferredCulture.Name);
         }
     }
 }
