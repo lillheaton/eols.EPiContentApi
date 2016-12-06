@@ -19,6 +19,7 @@ namespace EOls.EPiContentApi
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
             context.Services.Add(typeof(ICacheManager), new ContentApiCacheManager());
+            context.Services.Add(typeof(IPropertyConverterManager), new PropertyConverterManager());
         }
     }
 }

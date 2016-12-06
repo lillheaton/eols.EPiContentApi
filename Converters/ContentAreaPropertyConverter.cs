@@ -13,53 +13,40 @@ namespace EOls.EPiContentApi.Converters
 {
     public class ContentAreaPropertyConverter : IApiPropertyConverter<ContentArea>
     {
-        public ICacheManager CacheManager { get; } = ServiceLocator.Current.GetInstance<ICacheManager>();
-
-        public object Convert(ContentArea obj, object owner, string locale)
+        public object Convert(ContentSerializer serializer, ContentArea obj, object owner, string locale)
         {
             if (obj == null) return null;
 
             try
             {
-                return GetContent(obj.Items.Select(s => s.ContentLink), locale).ToArray();
+                return GetContent(serializer, obj.Items.Select(s => s.ContentLink), locale).ToArray();
             }
             catch (Exception e)
             {
-                return GetContent(obj.ContentFragments.Select(s => s.ContentLink), locale);
+                return GetContent(serializer, obj.ContentFragments.Select(s => s.ContentLink), locale);
             }
         }
 
-        private IEnumerable<object> GetContent(IEnumerable<ContentReference> references, string locale)
+        private IEnumerable<object> GetContent(ContentSerializer serializer, IEnumerable<ContentReference> references, string locale)
         {
             var repo = ServiceLocator.Current.GetInstance<IContentRepository>();
 
             foreach (var contentRef in references)
             {
+                var cache = serializer.GetCachedObject(contentRef, locale);
+                if (cache != null)
+                {
+                    yield return cache;
+                    continue;
+                }
+
                 if (contentRef is PageReference)
                 {
-                    var pageData = this.CacheManager.GetObject<ContentModel>(contentRef, locale);
-                    if (pageData != null)
-                    {
-                        yield return pageData;
-                        continue;
-                    }
-
-                    pageData = ContentSerializer.Instance.Serialize(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
-                    this.CacheManager.CacheObject(pageData, contentRef, locale);
-                    yield return pageData;
+                    yield return serializer.Serialize(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
                 }
                 else
                 {
-                    var contentDict = this.CacheManager.GetObject<Dictionary<string, object>>(contentRef, locale);
-                    if (contentDict != null)
-                    {
-                        yield return contentDict;
-                        continue;
-                    }
-
-                    contentDict = ContentSerializer.Instance.ConvertToKeyValue(repo.Get<ContentData>(contentRef, new LanguageSelector(locale)), locale);
-                    this.CacheManager.CacheObject(contentDict, contentRef, locale);
-                    yield return contentDict;
+                    yield return serializer.Serialize(repo.Get<IContent>(contentRef, new LanguageSelector(locale)), locale, true);
                 }
             }
         } 

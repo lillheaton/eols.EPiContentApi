@@ -2,6 +2,6 @@
 {
     public interface IApiPropertyConverter<T>
     {
-        object Convert(T obj, object owner, string locale);
+        object Convert(ContentSerializer serializer, T obj, object owner, string locale);
     }
 }
