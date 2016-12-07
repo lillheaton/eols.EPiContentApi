@@ -10,12 +10,15 @@ using EOls.EPiContentApi.Interfaces;
 using EOls.EPiContentApi.Models;
 
 using EPiServer.Core;
+using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 
 namespace EOls.EPiContentApi
 {
     public class ContentSerializer
     {
+        private static readonly ILogger Logger = LogManager.GetLogger();
+
         private ICacheManager CacheManager { get; }
         private IPropertyConverterManager PropertyConverterManager { get; }
         
@@ -201,8 +204,16 @@ namespace EOls.EPiContentApi
             var propertyConverter = this.PropertyConverterManager.Find(propType.PropertyType);
             if (propertyConverter != null)
             {
-                var method = propertyConverter.GetType().GetMethod("Convert"); 
-                return method.Invoke(propertyConverter, new[] { this, propType.GetValue(owner), owner, locale }); // Invoke convert method
+                try
+                {
+                    var method = propertyConverter.GetType().GetMethod("Convert");
+                    return method.Invoke(propertyConverter, new[] { this, propType.GetValue(owner), owner, locale }); // Invoke convert method    
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error while triggering 'Convert' method in PropertyConverter {propertyConverter.GetType().Name} : {ex.Message}");
+                    throw;
+                }
             }
 
             return propType.GetValue(owner);

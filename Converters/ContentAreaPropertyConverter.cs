@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using EOls.EPiContentApi.Interfaces;
-using EOls.EPiContentApi.Models;
 
 using EPiServer;
 using EPiServer.Core;
@@ -17,14 +15,7 @@ namespace EOls.EPiContentApi.Converters
         {
             if (obj == null) return null;
 
-            try
-            {
-                return GetContent(serializer, obj.Items.Select(s => s.ContentLink), locale).ToArray();
-            }
-            catch (Exception e)
-            {
-                return GetContent(serializer, obj.ContentFragments.Select(s => s.ContentLink), locale);
-            }
+            return GetContent(serializer, obj.Items.Select(s => s.ContentLink), locale).ToArray();
         }
 
         private IEnumerable<object> GetContent(ContentSerializer serializer, IEnumerable<ContentReference> references, string locale)
