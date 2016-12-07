@@ -12,8 +12,8 @@
     <copyright>Copyright 2016</copyright>
     <tags>EPiServer API Content contentApi GenericContentApi</tags>
     <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="[9.5.0,)" />
-      <dependency id="EPiServer.Framework" version="[9.5.0,)" />
+      <dependency id="EPiServer.CMS.Core" version="[10.2.0,)" />
+      <dependency id="EPiServer.Framework" version="[10.2.0,)" />
       <dependency id="Microsoft.AspNet.WebApi" version="[5.2.3,)" />
     </dependencies>
   </metadata>
