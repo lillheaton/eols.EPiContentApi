@@ -50,41 +50,50 @@ By using the IApiPropertyConverter interface you will be able to convert any pro
 
 ```C#
 public class CustomUrlConverter : IApiPropertyConverter<Url>
-    {
-    public object Convert(Url obj, string locale)
-    {
+{
+  public object Convert(Url obj, string locale)
+  {
     // Here you are free to convert it any way you like
     return obj?.ToString();
-    }
-    }
-    ```
+  }
+}
+```
 
-    ### Use Custom Converter
-    After creating your converter, you need to add it to the IPropertyConverterManager.
-    ```C#
-    [InitializableModule]
-    [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
-    public class ConfigureModule : IConfigurableModule
-    {
-    public void Initialize(InitializationEngine context) {}
+### Use Custom Converter
+After creating your converter, you need to add it to the IPropertyConverterManager.
+```C#
+[InitializableModule]
+[ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+public class ConfigureModule : IConfigurableModule
+{
+  public void Initialize(InitializationEngine context) {}
 
-    public void Uninitialize(InitializationEngine context) {}
+  public void Uninitialize(InitializationEngine context) {}
 
-    public void ConfigureContainer(ServiceConfigurationContext context)
-    {
-    context.ConfigurationComplete += Context_ConfigurationComplete;
-    }
+  public void ConfigureContainer(ServiceConfigurationContext context)
+  {
+  	context.ConfigurationComplete += Context_ConfigurationComplete;
+  }
 
-    private void Context_ConfigurationComplete(object sender, ServiceConfigurationEventArgs e)
-    {
+  private void Context_ConfigurationComplete(object sender, ServiceConfigurationEventArgs e)
+  {
     ServiceLocator.Current.GetInstance<IPropertyConverterManager>
-        ().ReplaceConverter(new CustomUrlConverter());
-        }
-        }
-        ```
+    ().ReplaceConverter(new CustomUrlConverter());
+  }
+}
+```
 
-        ### Cacheing
-        Due to heavy reflection operations, the content gets cached to imporve performance. Pages and blocks gets cached individually and when you republish a page or a block that cached gets cleared.
+### Cacheing
+Due to heavy reflection operations, the content gets cached to imporve performance. Pages and blocks gets cached individually and when you republish a page or a block that cached gets cleared.
 
-        This nuget currently uses a wrapper (<b>ICacheManager</b>) for EPiServers CacheManager which you can override in EPiServers ServiceLocator.
+This nuget currently uses a wrapper (<b>ICacheManager</b>) for EPiServers CacheManager which you can override in EPiServers ServiceLocator.
 
+### Default output JSON
+```C#
+GlobalConfiguration.Configure(configuration =>
+{
+  configuration.Formatters.Clear();
+  configuration.Formatters.Add(new JsonMediaTypeFormatter());
+  configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+});
+```
