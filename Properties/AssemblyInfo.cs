@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A Generic EPiServer Content Api")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("EOls.EPiContentApi")]
-[assembly: AssemblyCopyright("Copyright © Emil Olsson 2015")]
+[assembly: AssemblyCopyright("Copyright © Emil Olsson 2016")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyCompany("Emil Olsson")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.1.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.2.0")]
+[assembly: AssemblyFileVersion("1.0.2.0")]

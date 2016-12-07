@@ -1,20 +1,22 @@
 # EPiServer Content API
 A generic content api for the EPiServer platform. The nuget comes with a standard set of "property converters" but this converters can be overridden and handled differently to suit your needs (make usage of CDN for example)
-###Installation
+
+### Installation
 
     PM> Install-Package EOls.EPiContentApi
 
-###Usage
+### Usage
 
     [GET] /api/{market}/content/{id}
     [GET] /api/content/{id}?locale={market}
-    
+
     Example: /api/en/content/5
 
-###EPiServer Page Example
-The API will get all the properties that have either the <B>DisplayAttribute</B> or the <b>ApiPropertyAttribute</b>
+### EPiServer Page Example
+
+The API will get all the properties that have either the <B>DisplayAttribute</B> or the <b>ApiPropertyAttribute</b> and chache the content.
 ```C#
-class StartPage 
+public class StartPage
 {
     [Display(GroupName = SystemTabNames.Content, Order = 10)]
     public virtual ContentArea MainContentArea { get; set; }
@@ -25,14 +27,14 @@ class StartPage
 
     [ApiProperty]
     public DateTime CachedContent { get { return DateTime.Now; } } // This property will be cached
-        
+
     [ApiProperty(Cache = false)]
-    public DateTime NonCachedContent { get { return DateTime.Now; } } // This will not be cached    
+    public DateTime NonCachedContent { get { return DateTime.Now; } } // This will not be cached
 
     [ApiProperty]
-    public object SomeProperty 
+    public object SomeProperty
     {
-        get 
+        get
         {
             return new {
                 FirstName = "Foo",
@@ -43,25 +45,46 @@ class StartPage
 }
 ```
 
-###Custom Property Converters
-By using the IApiPropertyConverter interface you will be able to convert the property to suit your needs.
+### Custom Property Converters
+By using the IApiPropertyConverter interface you will be able to convert any property type to suit your needs.
 
 ```C#
-public class UrlConverter : IApiPropertyConverter<Url>
-{
+public class CustomUrlConverter : IApiPropertyConverter<Url>
+    {
     public object Convert(Url obj, string locale)
     {
-        // Here you are free to convert it any way you like
-        return obj?.ToString();
+    // Here you are free to convert it any way you like
+    return obj?.ToString();
     }
-}
-```
+    }
+    ```
 
-###Cacheing
-Due to heavy reflection operations, the content gets cached to imporve performance. Pages and blocks gets cached individually and when you republish a page or a block that cached gets cleared.
+    ### Use Custom Converter
+    After creating your converter, you need to add it to the IPropertyConverterManager.
+    ```C#
+    [InitializableModule]
+    [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+    public class ConfigureModule : IConfigurableModule
+    {
+    public void Initialize(InitializationEngine context) {}
 
-###What's Next!
+    public void Uninitialize(InitializationEngine context) {}
 
-   * Unit test, better late then never!
-   * Attribute for hiding a whole class   
-   * More documentation! 
+    public void ConfigureContainer(ServiceConfigurationContext context)
+    {
+    context.ConfigurationComplete += Context_ConfigurationComplete;
+    }
+
+    private void Context_ConfigurationComplete(object sender, ServiceConfigurationEventArgs e)
+    {
+    ServiceLocator.Current.GetInstance<IPropertyConverterManager>
+        ().ReplaceConverter(new CustomUrlConverter());
+        }
+        }
+        ```
+
+        ### Cacheing
+        Due to heavy reflection operations, the content gets cached to imporve performance. Pages and blocks gets cached individually and when you republish a page or a block that cached gets cleared.
+
+        This nuget currently uses a wrapper (<b>ICacheManager</b>) for EPiServers CacheManager which you can override in EPiServers ServiceLocator.
+
