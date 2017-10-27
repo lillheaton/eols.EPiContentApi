@@ -14,7 +14,7 @@ A generic content api for the EPiServer platform. The nuget comes with a standar
 
 ### EPiServer Page Example
 
-The API will get all the properties that have either the <B>DisplayAttribute</B> or the <b>ApiPropertyAttribute</b> and chache the content.
+The API will get all the properties that have either the <B>DisplayAttribute</B> or the <b>ApiPropertyAttribute</b> and cache the content.
 ```C#
 public class StartPage
 {
@@ -83,8 +83,8 @@ public class ConfigureModule : IConfigurableModule
 }
 ```
 
-### Cacheing
-Due to heavy reflection operations, the content gets cached to imporve performance. Pages and blocks gets cached individually and when you republish a page or a block that cached gets cleared.
+### Caching
+Due to heavy reflection operations, the content gets cached to improve performance. Pages and blocks gets cached individually and when you republish a page or a block that cache gets cleared.
 
 This nuget currently uses a wrapper (<b>ICacheManager</b>) for EPiServers CacheManager which you can override in EPiServers ServiceLocator.
 
