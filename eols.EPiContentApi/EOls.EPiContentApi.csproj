@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -122,6 +123,9 @@
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
@@ -165,8 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\ApiPropertyAttribute.cs" />
-    <Compile Include="ConfigurationModule.cs" />
-    <Compile Include="ContentApiCacheManager.cs" />
+    <Compile Include="Services\Cache\CacheService.cs" />
     <Compile Include="ContentController.cs" />
     <Compile Include="ContentSerializer.cs" />
     <Compile Include="Converters\BlockDataPropertyConverter.cs" />
@@ -175,16 +178,17 @@
     <Compile Include="Converters\LinkItemCollectionPropertyConverter.cs" />
     <Compile Include="Converters\PageTypePropertyConverter.cs" />
     <Compile Include="Converters\UrlPropertyConverter.cs" />
-    <Compile Include="Extensions\EPiServerExtensions.cs" />
+    <Compile Include="Extensions\ContentReferenceEx.cs" />
     <Compile Include="Interfaces\IApiPropertyConverter.cs" />
-    <Compile Include="Interfaces\ICacheManager.cs" />
-    <Compile Include="Interfaces\IPropertyConverterManager.cs" />
+    <Compile Include="Services\Cache\ICacheService.cs" />
+    <Compile Include="Services\Converter\IConverterService.cs" />
     <Compile Include="Models\ContentModel.cs" />
     <Compile Include="Models\PropertyInfoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InitializationModule.cs" />
-    <Compile Include="PropertyConverterManager.cs" />
-    <Compile Include="Util\ReflectionHelper.cs" />
+    <Compile Include="Services\Converter\ConverterService.cs" />
+    <Compile Include="Services\Reflection\IReflectionService.cs" />
+    <Compile Include="Services\Reflection\ReflectionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

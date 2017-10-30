@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using EPiServer;
-using EPiServer.Core;
+﻿using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 
 namespace EOls.EPiContentApi.Extensions
 {
-    public static class EPiServerExtensions
+    public static class ContentReferenceEx
     {
         public static string GetFriendlyUrl(this ContentReference contentRef, bool abolute = false)
         {

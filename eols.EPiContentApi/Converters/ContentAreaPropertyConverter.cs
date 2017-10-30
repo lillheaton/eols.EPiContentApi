@@ -11,20 +11,20 @@ namespace EOls.EPiContentApi.Converters
 {
     public class ContentAreaPropertyConverter : IApiPropertyConverter<ContentArea>
     {
-        public object Convert(ContentSerializer serializer, ContentArea obj, object owner, string locale)
+        public object Convert(ContentArea obj, object owner, string locale)
         {
             if (obj == null) return null;
-
-            return GetContent(serializer, obj.Items.Select(s => s.ContentLink), locale).ToArray();
+            
+            return GetContent(obj.Items.Select(s => s.ContentLink), locale).ToArray();
         }
 
-        private IEnumerable<object> GetContent(ContentSerializer serializer, IEnumerable<ContentReference> references, string locale)
+        private IEnumerable<object> GetContent(IEnumerable<ContentReference> references, string locale)
         {
             var repo = ServiceLocator.Current.GetInstance<IContentRepository>();
 
             foreach (var contentRef in references)
             {
-                var cache = serializer.GetCachedObject(contentRef, locale);
+                var cache = ContentSerializer.GetCachedObject(contentRef, locale);
                 if (cache != null)
                 {
                     yield return cache;
@@ -33,11 +33,11 @@ namespace EOls.EPiContentApi.Converters
 
                 if (contentRef is PageReference)
                 {
-                    yield return serializer.Serialize(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
+                    yield return ContentSerializer.SerializePage(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
                 }
                 else
                 {
-                    yield return serializer.Serialize(repo.Get<IContent>(contentRef, new LanguageSelector(locale)), locale, true);
+                    yield return ContentSerializer.Serialize(repo.Get<IContent>(contentRef, new LanguageSelector(locale)), locale, true);
                 }
             }
         } 

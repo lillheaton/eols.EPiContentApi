@@ -8,6 +8,7 @@ using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
+using EOls.EPiContentApi.Services.Cache;
 
 namespace EOls.EPiContentApi
 {
@@ -44,7 +45,7 @@ namespace EOls.EPiContentApi
         private void Instance_PublishedContent(object sender, ContentEventArgs e)
         {
             // Try to remove cached content for contentReference
-            ServiceLocator.Current.GetInstance<ICacheManager>().RemoveCache(e.ContentLink, ContentLanguage.PreferredCulture.Name);
+            ServiceLocator.Current.GetInstance<ICacheService>().RemoveCache(e.ContentLink, ContentLanguage.PreferredCulture.Name);
         }
     }
 }

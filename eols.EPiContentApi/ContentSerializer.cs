@@ -1,36 +1,39 @@
-﻿using System;
+﻿using EOls.EPiContentApi.Attributes;
+using EOls.EPiContentApi.Extensions;
+using EOls.EPiContentApi.Models;
+using EOls.EPiContentApi.Services.Cache;
+using EOls.EPiContentApi.Services.Converter;
+using EOls.EPiContentApi.Services.Reflection;
+using EPiServer.Core;
+using EPiServer.Logging;
+using EPiServer.ServiceLocation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-using EOls.EPiContentApi.Attributes;
-using EOls.EPiContentApi.Extensions;
-using EOls.EPiContentApi.Interfaces;
-using EOls.EPiContentApi.Models;
-
-using EPiServer.Core;
-using EPiServer.Logging;
-using EPiServer.ServiceLocation;
-
 namespace EOls.EPiContentApi
 {
-    public class ContentSerializer
+    public static class ContentSerializer
     {
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        private ICacheManager CacheManager { get; }
-        private IPropertyConverterManager PropertyConverterManager { get; }
-        
+        private static readonly Injected<ICacheService> _cacheService = new Injected<ICacheService>();
+        private static readonly Injected<IConverterService> _converterService = new Injected<IConverterService>();
+        private static readonly Injected<IReflectionService> _reflectionService = new Injected<IReflectionService>();
+
+        private static ICacheService CacheService { get => _cacheService.Service; }
+        private static IConverterService ConverterService { get => _converterService.Service;  }
+        private static IReflectionService ReflectionService { get => _reflectionService.Service; }
+
         /// <summary>
         /// List of attributes that will locate properties on IContent
         /// </summary>
         private static Type[] propertyAttributes = { typeof(DisplayAttribute), typeof(ApiPropertyAttribute) };
         
-        public ContentSerializer()
+        static ContentSerializer()
         {
-            this.CacheManager = ServiceLocator.Current.GetInstance<ICacheManager>();
-            this.PropertyConverterManager = ServiceLocator.Current.GetInstance<IPropertyConverterManager>();
         }
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace EOls.EPiContentApi
         /// <param name="page"></param>
         /// <param name="cacheRootLevel">If true, will cache whole object with cache key page reference id.</param>
         /// <returns></returns>
-        public object Serialize(PageData page, bool cacheRootLevel = false)
+        public static object SerializePage(PageData page, bool cacheRootLevel = false)
         {
             var data = new ContentModel
             {
@@ -53,16 +56,24 @@ namespace EOls.EPiContentApi
             };
 
             if (cacheRootLevel) 
-                this.CacheManager.CacheObject(data, page.ContentLink, page.LanguageBranch);
+                CacheService.CacheObject(data, page.ContentLink, page.LanguageBranch);
             
             return data;
         }
-        public object Serialize(IContent content, string locale, bool cacheRootLevel = false)
+
+        public static object Serialize(IContent content, string locale, bool cacheRootLevel = false)
         {
-            var dict = ConvertToKeyValue(content, locale);
+            object target = content;
+
+            if (ConverterService.HasConverter(content.GetType()))
+            {
+                target = ConvertType(target.GetType(), target, locale);
+            }
+
+            var dict = ConvertToKeyValue(target, locale);
 
             if (cacheRootLevel)
-                this.CacheManager.CacheObject(dict, content.ContentLink, locale);
+                CacheService.CacheObject(dict, content.ContentLink, locale);
             
             return dict;
         }
@@ -74,7 +85,7 @@ namespace EOls.EPiContentApi
         /// <param name="obj"></param>
         /// <param name="locale"></param>
         /// <returns></returns>
-        public Dictionary<string, object> ConvertToKeyValue<T>(T obj, string locale) where T : class
+        public static Dictionary<string, object> ConvertToKeyValue<T>(T obj, string locale) where T : class
         {
             Dictionary<string, object> dict;
 
@@ -85,20 +96,24 @@ namespace EOls.EPiContentApi
             }
             
             // Obj is not cached, serialize object
-            dict = GetProperties(obj).ToDictionary(prop => prop.PropertyInfo.Name, prop => ConvertProperty(prop.PropertyInfo, obj, locale));
+            dict = GetNoneHiddenProperties(obj)
+                .ToDictionary(
+                    prop => prop.Name, 
+                    prop => ConvertProperty(prop, obj, locale)
+                );
 
             // If obj is IContent, cache the object
             if (obj is IContent)
             {
-                this.CacheManager.CacheObject(dict, (obj as IContent).ContentLink, locale);
+                CacheService.CacheObject(dict, (obj as IContent).ContentLink, locale);
             }
 
             return dict;
         }
 
-        public object GetCachedObject(ContentReference contentRef, string locale)
+        public static object GetCachedObject(ContentReference contentRef, string locale)
         {
-            return this.CacheManager.GetObject<object>(contentRef, locale);
+            return CacheService.GetObject<object>(contentRef, locale);
         }
 
 
@@ -110,7 +125,7 @@ namespace EOls.EPiContentApi
         /// <param name="locale"></param>
         /// <param name="cachedDict"></param>
         /// <returns></returns>
-        private bool IsCachedContent(object obj, string locale, out Dictionary<string, object> cachedDict)
+        private static bool IsCachedContent(object obj, string locale, out Dictionary<string, object> cachedDict)
         {
             cachedDict = null;
 
@@ -118,7 +133,7 @@ namespace EOls.EPiContentApi
             if (obj is IContent)
             {
                 var content = obj as IContent;
-                cachedDict = this.CacheManager.GetObject<Dictionary<string, object>>(content.ContentLink, locale);
+                cachedDict = CacheService.GetObject<Dictionary<string, object>>(content.ContentLink, locale);
                 if (cachedDict != null)
                 {
                     // Loop throug all properties and check if some properties don't want to cache their content
@@ -137,21 +152,17 @@ namespace EOls.EPiContentApi
         /// <param name="owner"></param>
         /// <param name="cachedDict"></param>
         /// <param name="locale"></param>
-        private void HandleCachedContent(IContent owner, Dictionary<string, object> cachedDict, string locale)
+        private static void HandleCachedContent(IContent owner, Dictionary<string, object> cachedDict, string locale)
         {
             // Loop throug all properties and check if some properties don't want to cache their content
-            foreach (var prop in GetProperties(owner))
+            foreach (var prop in ReflectionService.GetPropertiesWithAttributes(owner, propertyAttributes))
             {
-                if (prop.Attribute is ApiPropertyAttribute)
+                ApiPropertyAttribute attr = prop.Attributes.OfType<ApiPropertyAttribute>().FirstOrDefault();
+                if (attr != null && !attr.Cache && cachedDict.ContainsKey(prop.PropertyInfo.Name))
                 {
-                    var attr = prop.Attribute as ApiPropertyAttribute;
-                    if (!attr.Cache && cachedDict.ContainsKey(prop.PropertyInfo.Name))
-                    {
-                        cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, owner, locale);
-                        continue;
-                    }
+                    cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, owner, locale);
+                    continue;
                 }
-
 
                 if (typeof(ContentArea).IsAssignableFrom(prop.PropertyInfo.PropertyType))
                 {
@@ -167,7 +178,7 @@ namespace EOls.EPiContentApi
                     if (pageRef == null)
                         continue;
 
-                    var contentRefDict = this.CacheManager.GetObject<Dictionary<string, object>>(pageRef, locale);
+                    var contentRefDict = CacheService.GetObject<Dictionary<string, object>>(pageRef, locale);
                     if (contentRefDict == null)
                     {                        
                         cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, owner, locale);
@@ -179,17 +190,14 @@ namespace EOls.EPiContentApi
                     if (contentobj == null)
                         continue;
 
-                    var contentDict = this.CacheManager.GetObject<Dictionary<string, object>>(contentobj.ContentLink, locale);
+                    var contentDict = CacheService.GetObject<Dictionary<string, object>>(contentobj.ContentLink, locale);
                     if (contentDict == null)
                     {
                         cachedDict[prop.PropertyInfo.Name] = ConvertProperty(prop.PropertyInfo, owner, locale);
                     }
                 }
             }
-        }
-
-
-
+        }        
 
         /// <summary>
         /// Note! Uses hevy reflection! Will check if there is any property converter for the type. If so then invoke property converter method
@@ -198,16 +206,15 @@ namespace EOls.EPiContentApi
         /// <param name="owner"></param>
         /// <param name="locale"></param>
         /// <returns></returns>
-        private object ConvertProperty(PropertyInfo propType, object owner, string locale)
+        private static object ConvertProperty(PropertyInfo propType, object owner, string locale)
         {
-            // Check if there is any property converter for the property type
-            var propertyConverter = this.PropertyConverterManager.Find(propType.PropertyType);
-            if (propertyConverter != null)
+            // Check if there is any property converter for the property type            
+            if (ConverterService.TryFind(propType.PropertyType, out object propertyConverter))
             {
                 try
                 {
                     var method = propertyConverter.GetType().GetMethod("Convert");
-                    return method.Invoke(propertyConverter, new[] { this, propType.GetValue(owner), owner, locale }); // Invoke convert method    
+                    return method.Invoke(propertyConverter, new[] {  propType.GetValue(owner), owner, locale }); // Invoke convert method    
                 }
                 catch (Exception ex)
                 {
@@ -219,56 +226,45 @@ namespace EOls.EPiContentApi
             return propType.GetValue(owner);
         }
 
-        /// <summary>
-        /// Get all the properties from T obj that have any of the specified "propertyAttributes"
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private IEnumerable<PropertyInfoModel> GetProperties<T>(T obj) where T : class
-        {
-            PropertyInfo[] properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            // Check if T obj is a castle object (most likely it will be)
-            if (!IsProxy(obj))
+        private static object ConvertType(Type target, object obj, string locale)
+        {            
+            // Check if there is any property converter for the property type            
+            if (ConverterService.TryFind(target, out object propertyConverter))
             {
-                // Get all the properties from T obj that have any of the specified "propertyAttributes"
-                List<PropertyInfo> dynamicProperties =
-                    obj.GetType()
-                        .BaseType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                        .Where(s => s.GetCustomAttributes().Any(a => propertyAttributes.Contains(a.GetType())))
-                        .ToList();
-
-                // Loop all properties with ApiPropertyAttribute and check if any has "Hide" == true
-                for (int i = dynamicProperties.Count; i--> 0; i--)
+                try
                 {
-                    var attr = dynamicProperties[i].GetCustomAttributes().OfType<ApiPropertyAttribute>().FirstOrDefault();
-                    if (attr != null && attr.Hide)
-                    {
-                        dynamicProperties.Remove(dynamicProperties[i]);
-                    }
+                    var method = propertyConverter.GetType().GetMethod("Convert");
+                    return method.Invoke(propertyConverter, new[] { obj, obj, locale }); // Invoke convert method    
                 }
-
-                return properties.Where(s => dynamicProperties.Any(p => p.Name == s.Name)).Select(s => new PropertyInfoModel { PropertyInfo = s, Attribute = s.GetCustomAttributes().OfType<ApiPropertyAttribute>().FirstOrDefault()} );
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error while triggering 'Convert' method in PropertyConverter {propertyConverter.GetType().Name} : {ex.Message}");
+                    throw;
+                }
             }
-            
-            return properties.Where(s => s.GetCustomAttributes().Any(a => propertyAttributes.Contains(a.GetType()))).Select(s => new PropertyInfoModel { PropertyInfo = s, Attribute = s.GetCustomAttributes().OfType<ApiPropertyAttribute>().FirstOrDefault() });
+
+            return obj;
         }
 
         /// <summary>
-        /// Will check if the object is a proxy object (in EPiServers case Castle object)
-        /// </summary>
-        private static bool IsProxy(object obj)
+        /// Get all the none hidden properties from T obj that have any of the specified "propertyAttributes"
+        /// </summary>        
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private static IEnumerable<PropertyInfo> GetNoneHiddenProperties(object obj)
         {
-            try
-            {
-                string location = obj.GetType().Assembly.Location;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return ReflectionService.GetPropertiesWithAttributes(obj, propertyAttributes)
+                .Where(x =>
+                {
+                    var apiAttr = x.Attributes.OfType<ApiPropertyAttribute>().FirstOrDefault();
+                    if (apiAttr != null && apiAttr.Hide)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                })
+                .Select(x => x.PropertyInfo);
         }
     }
 }

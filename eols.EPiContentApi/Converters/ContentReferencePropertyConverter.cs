@@ -10,7 +10,7 @@ namespace EOls.EPiContentApi.Converters
 {
     public class ContentReferencePropertyConverter : IApiPropertyConverter<ContentReference>
     {
-        public object Convert(ContentSerializer serializer, ContentReference obj, object owner, string locale)
+        public object Convert(ContentReference obj, object owner, string locale)
         {
             if (obj == null) return null;
 

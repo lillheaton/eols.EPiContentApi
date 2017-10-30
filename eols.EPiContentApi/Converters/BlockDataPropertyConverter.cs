@@ -1,13 +1,14 @@
 ﻿using EOls.EPiContentApi.Interfaces;
 using EPiServer.Core;
+using EPiServer.ServiceLocation;
 
 namespace EOls.EPiContentApi.Converters
 {
     public class BlockDataPropertyConverter : IApiPropertyConverter<BlockData>
     {
-        public object Convert(ContentSerializer serializer, BlockData obj, object owner, string locale)
+        public object Convert(BlockData obj, object owner, string locale)
         {
-            return obj != null ? serializer.ConvertToKeyValue(obj, locale) : null;
+            return obj != null ? ContentSerializer.ConvertToKeyValue(obj, locale) : null;
         }
     }
 }

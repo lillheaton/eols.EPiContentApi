@@ -1,14 +1,16 @@
 ﻿using EOls.EPiContentApi.Interfaces;
 using EPiServer;
 using EPiServer.Core;
+using EPiServer.ServiceLocation;
 
-namespace EOls.EPiContentApi
+namespace EOls.EPiContentApi.Services.Cache
 {
-    public class ContentApiCacheManager : ICacheManager
+    [ServiceConfiguration(ServiceType = typeof(ICacheService), Lifecycle = ServiceInstanceScope.Singleton)]
+    public class CacheService : ICacheService
     {
         private const string Key = "EOls.ContentApi.ContentID{0}.Locale{1}";
 
-        public ContentApiCacheManager() { }
+        public CacheService() { }
 
         public void CacheObject<T>(T obj, ContentReference contentReference, string locale) where T : class 
         {

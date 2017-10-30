@@ -1,8 +1,8 @@
 ﻿using EPiServer.Core;
 
-namespace EOls.EPiContentApi.Interfaces
+namespace EOls.EPiContentApi.Services.Cache
 {
-    public interface ICacheManager
+    public interface ICacheService
     {
         void CacheObject<T>(T obj, ContentReference contentReference, string locale) where T : class;
 

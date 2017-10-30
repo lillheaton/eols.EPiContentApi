@@ -20,11 +20,16 @@ namespace EOls.EPiContentApi
     {
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        private IContentRepository Repo { get; } = ServiceLocator.Current.GetInstance<IContentRepository>();
-        private ContentSerializer ContentSerializer { get; } = new ContentSerializer();
+        private IContentRepository Repo { get; } = ServiceLocator.Current.GetInstance<IContentRepository>();        
         
         public IHttpActionResult Get(int id, string locale = null)
         {
+            var type = typeof(Interfaces.IApiPropertyConverter<>);
+            var generic = type.MakeGenericType(typeof(BlockData));
+
+            var test = ServiceLocator.Current.GetAllInstances(generic);
+
+
             // Set locale by query or by EPiServer
             locale = locale ?? ContentLanguage.PreferredCulture.Name;
             
@@ -34,7 +39,7 @@ namespace EOls.EPiContentApi
 
             try
             {
-                page = Repo.Get<PageData>(new ContentReference(id), new LanguageSelector(locale));
+                page = Repo.Get<PageData>(new ContentReference(id), new LanguageSelector(locale));                
             }
             catch (Exception ex)
             {
@@ -52,7 +57,7 @@ namespace EOls.EPiContentApi
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var serializedData = ContentSerializer.Serialize(page);
+            var serializedData = ContentSerializer.SerializePage(page);
             stopwatch.Stop();
             
             var response = Request.CreateResponse(HttpStatusCode.OK, serializedData);
