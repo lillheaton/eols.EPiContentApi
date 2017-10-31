@@ -39,7 +39,7 @@ namespace EOls.EPiContentApi.Services.Converter
                 domainAssemblyConverters
                 .Concat(
                     localAssemblyConverters
-                    .Where(x => !domainAssemblyConverters.Any(s => s.PropertyType != x.PropertyType))
+                    .Where(x => !domainAssemblyConverters.Any(s => s.PropertyType == x.PropertyType))
                 )
                 .ToArray();
 

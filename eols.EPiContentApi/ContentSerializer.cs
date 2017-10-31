@@ -44,17 +44,26 @@ namespace EOls.EPiContentApi
         /// <returns></returns>
         public static object SerializePage(PageData page, bool cacheRootLevel = false)
         {
-            var data = new ContentModel
-            {
-                ContentId = page.ContentLink.ID,
-                Url = page.ContentLink.GetFriendlyUrl(),
-                Name = page.Name,
-                ContentTypeId = page.ContentTypeID,
-                PageTypeName = page.PageTypeName,
-                LanguageBranch = page.LanguageBranch,
-                Content = ConvertToKeyValue(page, page.LanguageBranch)
-            };
+            object data;
 
+            if (ConverterService.HasConverter(page.GetType()))
+            {
+                data = ConvertType(page.GetType(), page, page.Language.Name);
+            }
+            else
+            {
+                data = new ContentModel
+                {
+                    ContentId = page.ContentLink.ID,
+                    Url = page.ContentLink.GetFriendlyUrl(),
+                    Name = page.Name,
+                    ContentTypeId = page.ContentTypeID,
+                    PageTypeName = page.PageTypeName,
+                    LanguageBranch = page.LanguageBranch,
+                    Content = ConvertToKeyValue(page, page.LanguageBranch)
+                };
+            }
+            
             if (cacheRootLevel) 
                 CacheService.CacheObject(data, page.ContentLink, page.LanguageBranch);
             
@@ -69,13 +78,15 @@ namespace EOls.EPiContentApi
             {
                 target = ConvertType(target.GetType(), target, locale);
             }
-
-            var dict = ConvertToKeyValue(target, locale);
-
-            if (cacheRootLevel)
-                CacheService.CacheObject(dict, content.ContentLink, locale);
+            else
+            {
+                target = ConvertToKeyValue(target, locale);
+            }
             
-            return dict;
+            if (cacheRootLevel)
+                CacheService.CacheObject(target, content.ContentLink, locale);
+            
+            return target;
         }
 
         /// <summary>
@@ -202,19 +213,37 @@ namespace EOls.EPiContentApi
         /// <summary>
         /// Note! Uses hevy reflection! Will check if there is any property converter for the type. If so then invoke property converter method
         /// </summary>
-        /// <param name="propType"></param>
+        /// <param name="propTypeInfo"></param>
         /// <param name="owner"></param>
         /// <param name="locale"></param>
         /// <returns></returns>
-        private static object ConvertProperty(PropertyInfo propType, object owner, string locale)
+        private static object ConvertProperty(PropertyInfo propTypeInfo, object owner, string locale)
         {
+            if (propTypeInfo.PropertyType.IsArray)
+            {
+                var enumerable = (propTypeInfo.GetValue(owner) as System.Collections.IEnumerable);
+                if(enumerable != null)
+                {
+                    var enumerator = enumerable.GetEnumerator();
+
+                    var result = new List<object>();
+                    while (enumerator.MoveNext())
+                    {
+                        object current = enumerator.Current;
+                        result.Add(ConvertToKeyValue(current, locale));
+                    }
+
+                    return result;
+                }
+            }
+
             // Check if there is any property converter for the property type            
-            if (ConverterService.TryFind(propType.PropertyType, out object propertyConverter))
+            if (ConverterService.TryFind(propTypeInfo.PropertyType, out object propertyConverter))
             {
                 try
                 {
                     var method = propertyConverter.GetType().GetMethod("Convert");
-                    return method.Invoke(propertyConverter, new[] {  propType.GetValue(owner), owner, locale }); // Invoke convert method    
+                    return method.Invoke(propertyConverter, new[] {  propTypeInfo.GetValue(owner), owner, locale }); // Invoke convert method    
                 }
                 catch (Exception ex)
                 {
@@ -223,7 +252,7 @@ namespace EOls.EPiContentApi
                 }
             }
 
-            return propType.GetValue(owner);
+            return propTypeInfo.GetValue(owner);
         }
 
         private static object ConvertType(Type target, object obj, string locale)
@@ -253,7 +282,20 @@ namespace EOls.EPiContentApi
         /// <returns></returns>
         private static IEnumerable<PropertyInfo> GetNoneHiddenProperties(object obj)
         {
-            return ReflectionService.GetPropertiesWithAttributes(obj, propertyAttributes)
+            // Class has ApiPropertyAttribute with hide on.
+            bool hideClass = HideClass(obj);
+
+            Type[] searchAttributes;
+            if (hideClass)
+            {
+                searchAttributes = new[] { typeof(ApiPropertyAttribute) };
+            }
+            else
+            {
+                searchAttributes = propertyAttributes;
+            }
+
+            return ReflectionService.GetPropertiesWithAttributes(obj, searchAttributes)
                 .Where(x =>
                 {
                     var apiAttr = x.Attributes.OfType<ApiPropertyAttribute>().FirstOrDefault();
@@ -265,6 +307,20 @@ namespace EOls.EPiContentApi
                     return true;
                 })
                 .Select(x => x.PropertyInfo);
+        }
+
+        private static bool HideClass(object obj)
+        {
+            if (obj.GetType().IsClass)
+            {
+                var attr = obj.GetType().GetCustomAttributes<ApiPropertyAttribute>().FirstOrDefault();
+                if(attr != null && attr.Hide)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
