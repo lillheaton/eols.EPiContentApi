@@ -72,9 +72,19 @@ namespace EOls.EPiContentApi
 
         public static object Serialize(IContent content, string locale, bool cacheRootLevel = false)
         {
-            object target = content;
+            object target = Serialize(content, locale);            
+            
+            if (cacheRootLevel)
+                CacheService.CacheObject(target, content.ContentLink, locale);
+            
+            return target;
+        }
 
-            if (ConverterService.HasConverter(content.GetType()))
+        public static object Serialize(object obj, string locale)
+        {
+            object target = obj;
+
+            if (ConverterService.HasConverter(target.GetType()))
             {
                 target = ConvertType(target.GetType(), target, locale);
             }
@@ -82,10 +92,7 @@ namespace EOls.EPiContentApi
             {
                 target = ConvertToKeyValue(target, locale);
             }
-            
-            if (cacheRootLevel)
-                CacheService.CacheObject(target, content.ContentLink, locale);
-            
+
             return target;
         }
 
@@ -219,9 +226,11 @@ namespace EOls.EPiContentApi
         /// <returns></returns>
         private static object ConvertProperty(PropertyInfo propTypeInfo, object owner, string locale)
         {
-            if (propTypeInfo.PropertyType.IsArray)
+            object propertyValue = propTypeInfo.GetValue(owner);            
+
+            if (propTypeInfo.PropertyType.IsArray || (propertyValue is System.Collections.IEnumerable && !(propertyValue is string)))
             {
-                var enumerable = (propTypeInfo.GetValue(owner) as System.Collections.IEnumerable);
+                var enumerable = propertyValue as System.Collections.IEnumerable;
                 if(enumerable != null)
                 {
                     var enumerator = enumerable.GetEnumerator();
@@ -230,7 +239,7 @@ namespace EOls.EPiContentApi
                     while (enumerator.MoveNext())
                     {
                         object current = enumerator.Current;
-                        result.Add(ConvertToKeyValue(current, locale));
+                        result.Add(Serialize(current, locale));
                     }
 
                     return result;
@@ -243,7 +252,7 @@ namespace EOls.EPiContentApi
                 try
                 {
                     var method = propertyConverter.GetType().GetMethod("Convert");
-                    return method.Invoke(propertyConverter, new[] {  propTypeInfo.GetValue(owner), owner, locale }); // Invoke convert method    
+                    return method.Invoke(propertyConverter, new[] {  propertyValue, owner, locale }); // Invoke convert method    
                 }
                 catch (Exception ex)
                 {
@@ -252,7 +261,7 @@ namespace EOls.EPiContentApi
                 }
             }
 
-            return propTypeInfo.GetValue(owner);
+            return propertyValue;
         }
 
         private static object ConvertType(Type target, object obj, string locale)
