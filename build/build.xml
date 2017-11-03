@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Package">
+
+  <!-- Assemblies -->
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+    <MSBuildNugetTasksPath>$(MSBuildProjectDirectory)\tools\MSBuildNugetTasks</MSBuildNugetTasksPath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+  <Import Project="$(MSBuildNugetTasksPath)\MSBuild.NuGet.Tasks.Targets" />
+  
+  <!-- Properties -->
+  <PropertyGroup>
+    <RootDir>$(MSBuildProjectDirectory)\..</RootDir>
+    <PackageDir>$(MSBuildProjectDirectory)\package</PackageDir>
+    <BuildNuGetDir>$(MSBuildProjectDirectory)\nugetBuild</BuildNuGetDir>
+    <CoreProjectDir>$(RootDir)\src</CoreProjectDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <VersionMajor>2</VersionMajor>
+    <VersionMinor>1</VersionMinor>
+    <VersionPatch>2</VersionPatch>
+    <VersionSuffix></VersionSuffix>
+  </PropertyGroup>
+
+  <!-- Items -->
+  <ItemGroup>
+    <ProjectToBuild Include="$(CoreProjectDir)\eols.EPiContentApi\EOls.EPiContentApi.csproj">
+      <Properties>Configuration=Release</Properties>
+    </ProjectToBuild>
+  </ItemGroup>
+
+  <!-- Targets -->
+  <Target Name="Clean">
+    <RemoveDir Directories="$(PackageDir)" Condition="Exists('$(PackageDir)')" />
+    <MakeDir Directories="$(BuildClientNuGetDir)" />
+    <MakeDir Directories="$(PackageDir)" />
+    <MakeDir Directories="$(BuildNuGetDir)" />
+  </Target>
+
+  <Target Name="UpdateAssemblyInfo" DependsOnTargets="Clean">
+		<Version Major="$(VersionMajor)" Minor="$(VersionMinor)" BuildType="None" RevisionType="Automatic">
+			<Output TaskParameter="Build" PropertyName="Build" />
+			<Output TaskParameter="Revision" PropertyName="Revision" />
+		</Version>
+		<AssemblyInfo CodeLanguage="CS"
+			OutputFile="$(CoreProjectDir)\eols.EPiContentApi\Properties\VersionInfo.cs"
+			AssemblyVersion="$(VersionMajor).$(VersionMinor).$(VersionPatch)"
+			AssemblyFileVersion="$(VersionMajor).$(VersionMinor).$(Build).$(Revision)"
+			AssemblyInformationalVersion="$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionSuffix)"/>
+	</Target>
+
+  <Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
+    <MSBuild Projects="@(ProjectToBuild)" />
+  </Target>
+
+  <!-- Prep Files -->
+  <Target Name="PrepairFiles" DependsOnTargets="Compile">
+    <ItemGroup>
+      <BinFiles Include="$(CoreProjectDir)\eols.EPiContentApi\Bin\Release\EOls.EPiContentApi.dll" />
+      <NuSpecFile Include="$(MSBuildProjectDirectory)\package.nuspec" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BinFiles)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
+    <Copy SourceFiles="@(NuSpecFile)" DestinationFolder="$(BuildNuGetDir)" />
+  </Target>
+
+  <Target Name="ManifestNuGet" DependsOnTargets="PrepairFiles">
+    <ItemGroup>
+      <ManifestFiles Include="$(BuildNuGetDir)\**\*" Exclude="$(BuildNuGetDir)\package.nuspec" />
+    </ItemGroup>
+
+    <MSBuild.NuGet.Tasks.ManifestUpdate
+      ManifestFile="$(BuildNuGetDir)\package.nuspec"
+      WorkingDirectory="$(BuildNuGetDir)"
+      Version="$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionSuffix)"
+      Files="@(ManifestFiles)" />
+  </Target>
+  
+  <Target Name="Package" DependsOnTargets="ManifestNuGet">
+
+    <MSBuild.NuGet.Tasks.Pack NuGetExePath="$(RootDir)\Build\nuget\nuget.exe"
+        ManifestFile="$(BuildNuGetDir)\package.nuspec"
+        BasePath="$(BuildNuGetDir)"
+        Version="$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionSuffix)"
+        OutputDirectory="$(PackageDir)" />
+
+    <RemoveDir Directories="$(BuildClientNuGetDir)" Condition="Exists('$(BuildClientNuGetDir)')" />
+    <RemoveDir Directories="$(BuildNuGetDir)" Condition="Exists('$(BuildNuGetDir)')" />
+  </Target>
+  
+</Project>

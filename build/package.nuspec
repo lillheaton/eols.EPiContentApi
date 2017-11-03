@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>EOls.EPiContentApi</id>
+    <title>A Generic EPiServer Content Api</title>
+    <version>0.0.0</version>
+    <authors>Emil Olsson</authors>
+    <owners>Emil Olsson</owners>
+    <projectUrl>https://github.com/lillheaton/eols.EPiContentApi</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright 2016</copyright>
+    <description>A Generic EPiServer Content Api</description>
+    <tags>EPiServer API Content contentApi GenericContentApi</tags>
+    <dependencies>
+      <dependency id="EPiServer.CMS.Core" version="[10.2.0,)" />
+      <dependency id="EPiServer.Framework" version="[10.2.0,)" />
+      <dependency id="Microsoft.AspNet.WebApi" version="[5.2.3,)" />
+    </dependencies>
+  </metadata>
+</package>

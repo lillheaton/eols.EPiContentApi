@@ -30,8 +30,10 @@ namespace EOls.EPiContentApi
         /// <summary>
         /// List of attributes that will locate properties on IContent
         /// </summary>
-        private static Type[] propertyAttributes = { typeof(DisplayAttribute), typeof(ApiPropertyAttribute) };
-        
+        private static readonly Type[] _propertyAttributes = { typeof(DisplayAttribute), typeof(ApiPropertyAttribute) };
+        private static readonly Type[] _noneConvertableTypes = new[] { typeof(string), typeof(KeyValuePair<,>), typeof(Dictionary<,>) };
+
+
         static ContentSerializer()
         {
         }
@@ -173,7 +175,7 @@ namespace EOls.EPiContentApi
         private static void HandleCachedContent(IContent owner, Dictionary<string, object> cachedDict, string locale)
         {
             // Loop throug all properties and check if some properties don't want to cache their content
-            foreach (var prop in ReflectionService.GetPropertiesWithAttributes(owner, propertyAttributes))
+            foreach (var prop in ReflectionService.GetPropertiesWithAttributes(owner, _propertyAttributes))
             {
                 ApiPropertyAttribute attr = prop.Attributes.OfType<ApiPropertyAttribute>().FirstOrDefault();
                 if (attr != null && !attr.Cache && cachedDict.ContainsKey(prop.PropertyInfo.Name))
@@ -226,12 +228,14 @@ namespace EOls.EPiContentApi
         /// <returns></returns>
         private static object ConvertProperty(PropertyInfo propTypeInfo, object owner, string locale)
         {
-            object propertyValue = propTypeInfo.GetValue(owner);            
-
-            if (propTypeInfo.PropertyType.IsArray || (propertyValue is System.Collections.IEnumerable && !(propertyValue is string)))
+            object propertyValue = propTypeInfo.GetValue(owner);
+            
+            if (propTypeInfo.PropertyType.IsArray || (propertyValue is System.Collections.IEnumerable && propertyValue.GetType().IsGenericType))
             {
+                Type genericTypeDefinition = propertyValue.GetType().GetGenericTypeDefinition();
+
                 var enumerable = propertyValue as System.Collections.IEnumerable;
-                if(enumerable != null)
+                if(enumerable != null && !_noneConvertableTypes.Contains(genericTypeDefinition))
                 {
                     var enumerator = enumerable.GetEnumerator();
 
@@ -301,7 +305,7 @@ namespace EOls.EPiContentApi
             }
             else
             {
-                searchAttributes = propertyAttributes;
+                searchAttributes = _propertyAttributes;
             }
 
             return ReflectionService.GetPropertiesWithAttributes(obj, searchAttributes)
