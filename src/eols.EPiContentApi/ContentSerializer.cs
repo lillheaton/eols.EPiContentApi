@@ -74,7 +74,7 @@ namespace EOls.EPiContentApi
 
         public static object Serialize(IContent content, string locale, bool cacheRootLevel = false)
         {
-            object target = Serialize(content, locale);            
+            object target = Serialize(content as object, locale);
             
             if (cacheRootLevel)
                 CacheService.CacheObject(target, content.ContentLink, locale);
@@ -229,6 +229,9 @@ namespace EOls.EPiContentApi
         private static object ConvertProperty(PropertyInfo propTypeInfo, object owner, string locale)
         {
             object propertyValue = propTypeInfo.GetValue(owner);
+
+            if (propertyValue == null)
+                return null;
             
             if (propTypeInfo.PropertyType.IsArray || (propertyValue is System.Collections.IEnumerable && propertyValue.GetType().IsGenericType))
             {
