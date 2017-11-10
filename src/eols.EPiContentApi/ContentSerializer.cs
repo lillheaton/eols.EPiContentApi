@@ -235,10 +235,18 @@ namespace EOls.EPiContentApi
             
             if (propTypeInfo.PropertyType.IsArray || (propertyValue is System.Collections.IEnumerable && propertyValue.GetType().IsGenericType))
             {
-                Type genericTypeDefinition = propertyValue.GetType().GetGenericTypeDefinition();
-
+                Type targetType;
+                if (propertyValue.GetType().IsGenericType)
+                {
+                    targetType = propertyValue.GetType().GetGenericTypeDefinition();
+                }
+                else
+                {
+                    targetType = propertyValue.GetType().GetElementType();
+                }
+                
                 var enumerable = propertyValue as System.Collections.IEnumerable;
-                if(enumerable != null && !_noneConvertableTypes.Contains(genericTypeDefinition))
+                if(enumerable != null && !_noneConvertableTypes.Contains(targetType))
                 {
                     var enumerator = enumerable.GetEnumerator();
 
