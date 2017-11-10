@@ -14,17 +14,20 @@ namespace EOls.EPiContentApi.Services.Cache
 
         public void CacheObject<T>(T obj, ContentReference contentReference, string locale) where T : class 
         {
-            CacheManager.Insert(string.Format(Key, contentReference.ID, locale).ToLowerInvariant(), obj);
+            return;
+            //CacheManager.Insert(string.Format(Key, contentReference.ID, locale).ToLowerInvariant(), obj);
         }
 
         public T GetObject<T>(ContentReference contentReference, string locale) where T : class 
         {
-            return CacheManager.Get(string.Format(Key, contentReference.ID, locale).ToLowerInvariant()) as T;
+            return null;
+            //return CacheManager.Get(string.Format(Key, contentReference.ID, locale).ToLowerInvariant()) as T;
         }
 
         public void RemoveCache(ContentReference contentReference, string locale)
         {
-            CacheManager.Remove(string.Format(Key, contentReference.ID, locale).ToLowerInvariant());
+            return;
+            //CacheManager.Remove(string.Format(Key, contentReference.ID, locale).ToLowerInvariant());
         }
     }
 }
