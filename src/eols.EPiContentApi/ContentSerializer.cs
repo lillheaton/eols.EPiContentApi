@@ -276,6 +276,11 @@ namespace EOls.EPiContentApi
                 }
             }
 
+            if (IsApiPropertyClass(propertyValue))
+            {
+                return Serialize(propertyValue, locale);
+            }
+
             return propertyValue;
         }
 
@@ -339,6 +344,20 @@ namespace EOls.EPiContentApi
             {
                 var attr = obj.GetType().GetCustomAttributes<ApiPropertyAttribute>().FirstOrDefault();
                 if(attr != null && attr.Hide)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsApiPropertyClass(object obj)
+        {
+            if (obj.GetType().IsClass)
+            {
+                var attr = obj.GetType().GetCustomAttributes<ApiPropertyAttribute>().FirstOrDefault();
+                if (attr != null && !attr.Hide)
                 {
                     return true;
                 }
