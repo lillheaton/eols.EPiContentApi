@@ -20,12 +20,19 @@ namespace EOls.EPiContentApi.Services.Reflection
         /// <returns></returns>
         public IEnumerable<Type> GetAssemblyClassesInheritGenericInterface(Type type, Assembly assembly)
         {
-            return
+            try
+            {
+                return
                 assembly
                 .GetTypes()
                 .Where(
                     x => x.IsClass &&
                     x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type));
+            }
+            catch (Exception e)
+            {
+                return new Type[0];
+            }
         }
 
         /// <summary>
