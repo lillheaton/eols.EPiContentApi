@@ -9,7 +9,7 @@ namespace EOls.EPiContentApi.Converters
     {
         public object Convert(LinkItemCollection obj, object owner, string locale)
         {
-            return obj?.Select(s => new { s.Title, s.Text, s.Href, s.Attributes, s.Language, s.Target }).ToArray();
+            return obj?.Select(s => new { s.Title, s.Text, s.Href, s.Attributes, s.Target }).ToArray();
         }
     }
 }

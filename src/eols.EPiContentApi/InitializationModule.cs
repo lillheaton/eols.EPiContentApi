@@ -6,9 +6,9 @@ using EOls.EPiContentApi.Interfaces;
 using EPiServer;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
-using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EOls.EPiContentApi.Services.Cache;
+using EPiServer.Globalization;
 
 namespace EOls.EPiContentApi
 {
