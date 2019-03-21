@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 using EOls.EPiContentApi.Interfaces;
@@ -14,7 +15,7 @@ namespace EOls.EPiContentApi.Converters
         public object Convert(ContentArea obj, object owner, string locale)
         {
             if (obj == null) return null;
-            
+
             return GetContent(obj.Items.Select(s => s.ContentLink), locale).ToArray();
         }
 
@@ -33,13 +34,20 @@ namespace EOls.EPiContentApi.Converters
 
                 if (contentRef is PageReference)
                 {
-                    yield return ContentSerializer.SerializePage(repo.Get<PageData>(contentRef, new LanguageSelector(locale)));
+                    yield return ContentSerializer.SerializePage(repo.Get<PageData>(contentRef, LanguageSelector.Fallback(locale, true)));
                 }
                 else
                 {
-                    yield return ContentSerializer.Serialize(repo.Get<IContent>(contentRef, new LanguageSelector(locale)), locale, true);
+                    yield return ContentSerializer.Serialize(
+                        repo.Get<IContent>(
+                            contentRef,
+                            LanguageSelector.Fallback(locale, true)                           
+                        ), 
+                        locale, 
+                        true
+                    );
                 }
             }
-        } 
+        }
     }
 }

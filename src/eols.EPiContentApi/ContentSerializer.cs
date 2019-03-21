@@ -46,6 +46,11 @@ namespace EOls.EPiContentApi
         /// <returns></returns>
         public static object SerializePage(PageData page, bool cacheRootLevel = false)
         {
+            if(page == null)
+            {
+                return null;
+            }
+
             object data;
 
             if (ConverterService.HasConverter(page.GetType()))
@@ -74,6 +79,11 @@ namespace EOls.EPiContentApi
 
         public static object Serialize(IContent content, string locale, bool cacheRootLevel = false)
         {
+            if(content == null)
+            {
+                return null;
+            }
+
             object target = Serialize(content as object, locale);
             
             if (cacheRootLevel)
@@ -85,6 +95,11 @@ namespace EOls.EPiContentApi
         public static object Serialize(object obj, string locale)
         {
             object target = obj;
+
+            if(target == null)
+            {
+                return null;
+            }
 
             if (ConverterService.HasConverter(target.GetType()))
             {

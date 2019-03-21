@@ -14,7 +14,7 @@ namespace EOls.EPiContentApi.Converters
         {
             if (obj == null) return null;
 
-            var content = ServiceLocator.Current.GetInstance<IContentRepository>().Get<IContent>(obj, new LanguageSelector(locale));
+            var content = ServiceLocator.Current.GetInstance<IContentRepository>().Get<IContent>(obj, LanguageSelector.Fallback(locale, true));
             var media = content as MediaData;
             if (media != null)
             {
