@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\ApiPropertyAttribute.cs" />
+    <Compile Include="Extensions\PropertyInfoEx.cs" />
     <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="Services\Cache\CacheService.cs" />
     <Compile Include="ContentController.cs" />

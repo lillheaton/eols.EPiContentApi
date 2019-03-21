@@ -24,12 +24,12 @@ namespace EOls.EPiContentApi.Converters
 
             foreach (var contentRef in references)
             {
-                var cache = ContentSerializer.GetCachedObject(contentRef, locale);
-                if (cache != null)
-                {
-                    yield return cache;
-                    continue;
-                }
+                //var cache = ContentSerializer.GetCachedObject(contentRef, locale);
+                //if (cache != null)
+                //{
+                //    yield return cache;
+                //    continue;
+                //}
 
                 if (contentRef is PageReference)
                 {

@@ -13,10 +13,6 @@ namespace EOls.EPiContentApi.Services.Converter
     {
         private readonly IReflectionService _reflectionService;
         private readonly (object ConverterInstance, Type PropertyType)[] _propertyConverters;
-
-        public ConverterService() : this(ServiceLocator.Current.GetInstance<IReflectionService>())
-        {
-        }
         
         public ConverterService(IReflectionService reflectionService)
         {
@@ -45,6 +41,11 @@ namespace EOls.EPiContentApi.Services.Converter
 
             (object ConverterInstance, Type PropertyType) ApiPropertyConverter(Type type) =>
                 (Activator.CreateInstance(type), _reflectionService.GetGenericTypeOfInterface(type));
+        }
+
+        public ConverterService() :
+            this(ServiceLocator.Current.GetInstance<IReflectionService>())
+        {
         }
 
         private Type[] GetPropertyConverterTypes(IEnumerable<Assembly> assemblies) =>

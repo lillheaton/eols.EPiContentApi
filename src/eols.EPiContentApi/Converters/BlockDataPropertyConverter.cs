@@ -8,7 +8,7 @@ namespace EOls.EPiContentApi.Converters
     {
         public object Convert(BlockData obj, object owner, string locale)
         {
-            return obj != null ? ContentSerializer.ConvertToKeyValue(obj, locale) : null;
+            return obj != null ? ContentSerializer.Serialize(obj, locale) : null;
         }
     }
 }
