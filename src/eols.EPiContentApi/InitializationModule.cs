@@ -1,14 +1,7 @@
-﻿using System.Web.Http;
-using System.Web.Routing;
-
-using EOls.EPiContentApi.Interfaces;
-
-using EPiServer;
-using EPiServer.Framework;
+﻿using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
-using EPiServer.ServiceLocation;
-using EOls.EPiContentApi.Services.Cache;
-using EPiServer.Globalization;
+using System.Web.Http;
+using System.Web.Routing;
 
 namespace EOls.EPiContentApi
 {
@@ -32,20 +25,11 @@ namespace EOls.EPiContentApi
 
         public void Initialize(InitializationEngine context)
         {
-            RegisterRoutes(RouteTable.Routes);
-            DataFactory.Instance.PublishedContent += Instance_PublishedContent;
+            RegisterRoutes(RouteTable.Routes);            
         }
-        
+
         public void Uninitialize(InitializationEngine context)
-        {
-            DataFactory.Instance.PublishedContent -= Instance_PublishedContent;
-        }
-
-
-        private void Instance_PublishedContent(object sender, ContentEventArgs e)
-        {
-            // Try to remove cached content for contentReference
-            ServiceLocator.Current.GetInstance<ICacheService>().RemoveCache(e.ContentLink, ContentLanguage.PreferredCulture.Name);
+        {            
         }
     }
 }

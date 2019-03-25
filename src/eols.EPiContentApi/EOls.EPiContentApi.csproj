@@ -37,6 +37,12 @@
     <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\..\..\nord-lock-platform\server\packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="EOls.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EOls.Serialization.1.1.0.6\lib\netstandard2.0\EOls.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="EPiSerializer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiSerializer.1.1.0.4\lib\netstandard2.0\EPiSerializer.dll</HintPath>
+    </Reference>
     <Reference Include="EPiServer, Version=11.3.1.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
       <HintPath>..\..\..\nord-lock-platform\server\packages\EPiServer.CMS.Core.11.3.1\lib\net461\EPiServer.dll</HintPath>
     </Reference>
@@ -82,8 +88,8 @@
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\nord-lock-platform\server\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.9.463, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <HintPath>..\packages\structuremap-signed.3.1.9.463\lib\net40\StructureMap.dll</HintPath>
@@ -169,35 +175,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\ApiPropertyAttribute.cs" />
-    <Compile Include="Extensions\PropertyInfoEx.cs" />
     <Compile Include="Properties\VersionInfo.cs" />
-    <Compile Include="Services\Cache\CacheService.cs" />
     <Compile Include="ContentController.cs" />
-    <Compile Include="ContentSerializer.cs" />
-    <Compile Include="Converters\BlockDataPropertyConverter.cs" />
-    <Compile Include="Converters\ContentAreaPropertyConverter.cs" />
-    <Compile Include="Converters\ContentReferencePropertyConverter.cs" />
-    <Compile Include="Converters\LinkItemCollectionPropertyConverter.cs" />
-    <Compile Include="Converters\PageTypePropertyConverter.cs" />
-    <Compile Include="Converters\UrlPropertyConverter.cs" />
-    <Compile Include="Extensions\ContentReferenceEx.cs" />
-    <Compile Include="Interfaces\IApiPropertyConverter.cs" />
-    <Compile Include="Services\Cache\ICacheService.cs" />
-    <Compile Include="Services\Converter\IConverterService.cs" />
-    <Compile Include="Models\ContentModel.cs" />
-    <Compile Include="Models\PropertyInfoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InitializationModule.cs" />
-    <Compile Include="Services\Converter\ConverterService.cs" />
-    <Compile Include="Services\Reflection\IReflectionService.cs" />
-    <Compile Include="Services\Reflection\ReflectionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
